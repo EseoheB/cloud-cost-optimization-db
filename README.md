@@ -4,6 +4,8 @@ A MySQL database that tracks cloud resources, metered usage, budgets, cost cente
 
 **Tech:** MySQL 8.0, SQL (joins, window functions, CASE logic, triggers), MySQL Workbench, Tableau
 
+**Live dashboard:** [Cloud Cost Optimization on Tableau Public](https://public.tableau.com/app/profile/rabiat.blessing.ibrahim/viz/CloudCostOptimizationDashboard_17918460822610/CloudCostOptimization)
+
 ## The problem
 
 Teams that run workloads in the cloud often can't answer simple cost questions quickly: which customer is closest to its budget, which department should be charged for what, which resources cost the most this month, and whether an invoice matches what was actually used. This database models those questions directly, so each one becomes a single query.
@@ -172,6 +174,8 @@ The core cost flow (project, resource, usage, pricing, region, resource type) wi
 ```
 cloud-cost-optimization-db/
 ├── README.md
+├── data/
+│   └── tableau_dashboard_data.xlsx  Query results behind the Tableau dashboard
 ├── docs/
 │   └── core_cost_flow_erd.png
 └── sql/
@@ -227,7 +231,7 @@ All data is synthetic. The companies, people, and email addresses are fictional.
 
 ## Analytics queries
 
-`04_analytics_queries.sql` holds the queries behind three Tableau dashboards, plus three scorecards and a reconciliation check. Results below come from running it right after `01` and `02`. Running the walkthrough first adds one project to Acme Corporation, which changes Query 1.
+`04_analytics_queries.sql` holds the queries behind the [Tableau dashboard](#dashboards), plus three scorecards and a reconciliation check. Results below come from running it right after `01` and `02`. Running the walkthrough first adds one project to Acme Corporation, which changes Query 1.
 
 ### Query 1: Executive spending overview
 
@@ -277,6 +281,18 @@ Two storage buckets account for over half of the month's metered cost, so storag
 ### Invoice reconciliation check
 
 Compares each invoice line item with the usage events linked to it. On the sample data, 15 of 18 line items have no linked usage, and the 3 that do are flagged as mismatches. For example, the November E-Commerce Platform line bills $9,800.75 while its 7 linked events total $49.69. The invoice amounts in the sample data were entered by hand rather than built from metering, and this check catches exactly that kind of gap before an invoice goes out.
+
+## Dashboards
+
+The three main queries feed an interactive Tableau dashboard: **[view it on Tableau Public](https://public.tableau.com/app/profile/rabiat.blessing.ibrahim/viz/CloudCostOptimizationDashboard_17918460822610/CloudCostOptimization)**.
+
+| Dashboard | Source query | What it shows |
+| --- | --- | --- |
+| Executive Spending Overview | Query 1 | Budget vs. spend for each customer |
+| Cost Center Allocation | Query 2 | Metered cost charged back to each department |
+| Top Cost Resources | Query 3 | Each resource's share of November 2024 spend, colored by category |
+
+The dashboard data is in [data/tableau_dashboard_data.xlsx](data/tableau_dashboard_data.xlsx), one sheet per query, taken from a fresh load of the sample data.
 
 ## Index benchmark
 
